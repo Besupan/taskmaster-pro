@@ -1,6 +1,5 @@
 var tasks = {};
 
-
 var createTask = function(taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
@@ -50,45 +49,42 @@ $(".card .list-group").sortable({
   scroll: false,
   tolerance: "pointer",
   helper: "clone",
-  activate: function(event) {
-    console.log("activate", this);
+  activate: function(event, ui) {
+    console.log(ui);
   },
-  deactiveate: function(event) {
-    console.log("deactivate", this);
+  deactiveate: function(event, ui) {
+    console.log(ui);
   },
   over: function(event) {
-    console.log("over", event.target);
+    console.log(event);
   },
   out: function(event) {
-    console.log("out", event.target);
+    console.log(event);
   },
-  update: function(event) {
+  update: function() {
     var tempArr = [];
 
-    $(this).children().each(function() {
-      var text = $(this)
-        .find("p")
-        .text()
-        .trim();
+    $(this)
+      .children()
+      .each(function() {
+        tempArr.push({
+          text: $(this)
+            .find("p")
+            .text()
+            .trim(),
+          date: $(this)
+            .find("span")
+            .text()
+            .trim()
+        });
+      });
 
-      var date = $(this)
-        .find("span")
-        .text()
-        .trim();
-        
-      tempArr.push({
-        text: text,
-        date: date
-      })
-      
-    });
-  var arrName = $(this)
+    var arrName = $(this)
       .attr("id")
       .replace("list-", "");
 
-  tasks[arrName] = tempArr;
-  saveTasks();
-  console.log(tempArr);
+    tasks[arrName] = tempArr;
+    saveTasks();
   },
   stop: function(event) {
     $(this).removeClass("dropover");
@@ -102,10 +98,10 @@ $("#trash").droppable({
     ui.draggable.remove();
   },
   over: function(event, ui) {
-    console.log("over");
+    console.log(ui);
   },
   out: function(event, ui) {
-    console.log("out");
+    console.log(ui);
   }
 });
 
@@ -140,7 +136,6 @@ $("#task-form-modal .btn-primary").click(function() {
     });
 
     saveTasks();
-
   }
 });
 
@@ -153,7 +148,6 @@ $(".list-group").on("click", "p", function() {
     .val(text);
   $(this).replaceWith(textInput);
   textInput.trigger("focus");
-  console.log(text);
   });
 $(".list-group").on("blur", "textarea", function() {
   //get the textarea's current value/text
@@ -199,7 +193,7 @@ $(".list-group").on("click", "span", function() {
 });
 
 //value of due date was changed
-$(".list-group").on("blur", "input[type='text']", function() {
+$(".list-group").on("change", "input[type='text']", function() {
   //get current text
   var date = $(this).val();
     
@@ -222,9 +216,8 @@ $(".list-group").on("blur", "input[type='text']", function() {
   var taskSpan = $("<span>")
     .addClass("badge badge-primary badge-pill")
     .text(date);
-
-  //replace input with span element
-  $(this).replaceWith(taskSpan);
+    //replace input with span element
+    $(this).replaceWith(taskSpan);
 });
 
 // remove all tasks
